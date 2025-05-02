@@ -12,30 +12,26 @@ class Blockchain {
     return block;
   }
 
-  static blockHash(block) {
-    // recalculer le hash du bloc
-    return Block.hash(block.timestamp, block.lastHash, block.data);
-  }
-
-  static isValidChain(chain) {
+  isValidChain(chain) {
     if (JSON.stringify(chain[0]) !== JSON.stringify(Block.genesis())) {
-      return false; // Si le premier bloc n'est pas identique au Genesis
+      return false;
     }
 
     for (let i = 1; i < chain.length; i++) {
       const block = chain[i];
       const lastBlock = chain[i - 1];
 
-      if (block.lastHash !== lastBlock.hash) {
-        return false; // Le lastHash du bloc doit correspondre au hash du précédent
-      }
+      // Vérifie le lien entre les blocs
+      if (block.lastHash !== lastBlock.hash) return false;
 
-      if (block.hash !== Blockchain.blockHash(block)) {
-        return false; // Le hash doit correspondre aux données recalculées
-      }
+      // Vérifie que le hash est correct
+      if (block.hash !== Block.blockHash(block)) return false;
+
+      // Vérifie que la difficulté n'a pas varié de plus de 1
+      if (Math.abs(lastBlock.difficulty - block.difficulty) > 1) return false;
     }
 
-    return true; // Si tous les blocs sont corrects
+    return true;
   }
 
   replaceChain(newChain) {
@@ -44,7 +40,7 @@ class Blockchain {
       return;
     }
 
-    if (!Blockchain.isValidChain(newChain)) {
+    if (!this.isValidChain(newChain)) {
       console.log('Received chain is invalid.');
       return;
     }

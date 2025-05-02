@@ -30,12 +30,13 @@ describe('Blockchain', () => {
   it('invalidates a chain with a corrupt genesis block', () => {
     blockchain2.chain[0].data = 'bad data';
 
-    expect(Blockchain.isValidChain(blockchain2.chain)).toBe(false);
+    expect(blockchain.isValidChain(blockchain2.chain)).toBe(false);
+
   });
 
   it('invalidates a corrupt chain', () => {
     blockchain2.addBlock('foo');
-    blockchain2.chain[1].data = 'not foo'; // On corrompt le bloc
+    blockchain2.chain[1].data = 'not foo'; 
 
     expect(Blockchain.isValidChain(blockchain2.chain)).toBe(false);
   });
